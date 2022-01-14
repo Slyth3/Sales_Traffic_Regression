@@ -1,6 +1,4 @@
-Predicting Sales and Foot Traffic of an Anonymous US Based Company Using LightGBM and Ridge Models
-
-Andrew Schleiss
+# Predicting Sales and Foot Traffic of an Anonymous US Based Company Using LightGBM and Ridge Models - by Andrew Schleiss
 
 1.
 # ![Shape1](RackMultipart20220114-4-1ryo50e_html_c186f39763cdc4c6.gif)
