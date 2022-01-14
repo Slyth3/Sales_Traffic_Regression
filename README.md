@@ -1,8 +1,6 @@
 # Predicting Sales and Foot Traffic of an Anonymous US Based Company Using LightGBM and Ridge Models - by Andrew Schleiss
 
-1.
-# ![Shape1](RackMultipart20220114-4-1ryo50e_html_c186f39763cdc4c6.gif)
-ProblemIntroduction
+# 1.ProblemIntroduction
 
 The problem is split into two parts, the prediction of both Sales as well as foot Traffic\* for the company at 1-hour intervals for the following month.
 
@@ -16,11 +14,9 @@ LightGBM outperformed Ridge with highest R-squared scores for both Sales and Tra
 
 \*All data and requirements were provided by REPL
 
-1.
-# ![Shape2](RackMultipart20220114-4-1ryo50e_html_6a1a59b4a5a212bf.gif)
-Datasets
+# 2 Datasets
 
-Training Data
+## Training Data
 
 TrainingdatafromREPL was received, which included two training files in csv format for Sales and Traffic values against their captured dates. A sample of the Sales data can be seen below:
 
@@ -30,7 +26,7 @@ Sample of the Sales data at 15min intervals
 
 The values were captured at 15-minute intervals during business hours (assumption). There were multiple timeframes missing or not captured for specific periods as well as 0\* values captured for Traffic data.
 
-Test Data
+## Test Data
 
 1-month prediction timeframes were extrapolated using the Sales and Traffic data respectively for each prediction. As such, the Test data contains the same hourly intervals as that of the previous month.
 
@@ -46,9 +42,7 @@ Yearly Gross Domestic Product ( **GDP** ) values were obtained as these values w
 
 US federal **holidays** were merged to training data as they should indicate days where customers would be more likely to make purchases.
 
-1.
-# ![Shape3](RackMultipart20220114-4-1ryo50e_html_c186f39763cdc4c6.gif)
-Features andProcessing
+# 3 Features andProcessing
 
 Missing Values
 
@@ -64,13 +58,13 @@ _One downside to interpolation relates to missing values present in the initial 
 
 _As a result, backfill_ _ **interpolation** _ _can be used to set these values._
 
-Resampling
+## Resampling
 
 Predictions were required at hour intervals however the training data was at 15-minute intervals; the data was therefore resampled with summation at 1-hour intervals. The resampling process causes several 0 values as it created intervals even where there was nothing captured in that hour.
 
 These 0 values must not be confused with the missing values present in the data.
 
-Date Decomposition
+## Date Decomposition
 
 **Temporal features** were extracted and extrapolated into fields:
 
@@ -82,13 +76,11 @@ Days falling on _Friday, Saturday_ and _Sunday_ were also extracted as well as e
 
 **Fourier decomposition (linear features)** was applied using Sine and Cosine functions on the minute, hour, day and month values to extract seasonality.
 
-Next Holiday
+## Next Holiday
 
 Using the holiday values (obtained from the federal holiday data) the number of days until the _next holiday_ was calculated; this was calculated as a ramp up of sales/traffic leading up to important holidays would be expected.
 
-1.
-# ![Shape4](RackMultipart20220114-4-1ryo50e_html_6a1a59b4a5a212bf.gif)
-Metrics
+# 4 Metrics
 
 The metrics used in this exercise included two metrics used for training and analysis:
 
@@ -103,11 +95,9 @@ RMSE indicates the error rate or difference between the actual and predicted val
 
 In isolation, RMSE is a good indicator for model performance, however, where there are very large or very small outliers in the training data this value could be exacerbated and may give a bad indication of the model&#39;s performance, therefore R2 was used to counter this as it will follow the over &#39;trend&#39; of the predictions to the actual values.
 
-1.
-# ![Shape5](RackMultipart20220114-4-1ryo50e_html_6a1a59b4a5a212bf.gif)
-Modelling Techniques
+# 5 Modelling Techniques
 
-Initial Model Selection
+## Initial Model Selection
 
 During the initial EDA process an auto-ml package called Pycaret was used to run multiple machine learning models on the Sales data. This provided an indication of the types of models to be used. The results are below:
 
@@ -121,7 +111,7 @@ The above shows that gradient boosting trees could be potential models for this 
 
 **Ridge**** Regression** – multiple linear models were tested (Huber, Tweedie) with the best being Ridge Regression. It was hypothesised that this was a result of the model&#39;s ability to apply _regularization_. Regularization was beneficial as there were multiple extracted additional features; this may result in a noisy dataset if not weighted correctly.
 
-Merge of Traffic and Sales
+## Merge of Traffic and Sales
 
 It was assumed that Sales is the primary prediction required as Sales has a direct impact on company revenue, as such and from the feature importance from the pycaret baseline, Traffic data was added to the Sales data.
 
@@ -129,13 +119,13 @@ It was assumed that Sales is the primary prediction required as Sales has a dire
 
 Pycaret baseline feature importance
 
-Hyperparameter Tuning
+## Hyperparameter Tuning
 
 The process for hyperparameter tuning was either done by **Optuna** for LightGBM or via an **iterative** process of trial-and-error for Ridge.
 
 Optuna a hyperparameter optimization framework was setup with a range of influential LightGBM parameters [2] and run for 300 trials with a pruning callback stop poor trials. The output of Optuna provided optimal parameters to minimize RMSE.
 
-Validation Hold-Out
+## Validation Hold-Out
 
 Hold-out validation method was used, with 1 month of training data being held for validation purposes as this is the same timeframe required for prediction.
 
@@ -145,7 +135,7 @@ Hold-out validation method was used, with 1 month of training data being held fo
 
 Traffic training and validation hold-out
 
-Experimental Runs
+## Experimental Runs
 
 A number of &#39;experiments&#39; were run, and their resulting RMSE and R2 score recorded. A full list of these runs can be provided on request with a number of important runs stated in their relative notebooks.
 
@@ -159,13 +149,13 @@ A set of experiments were to test:
 - Interpolation methods – linear, cubic spline, backfill
 - Scaling methods – Standard, MinMax or Robust Scaling
 
-Traffic Modelling Process
+## Traffic Modelling Process
 
 The modelling technique involved training and predicting Traffic data. This data would then be used in the prediction of Sales with the assumption that a higher number of customers in store will equate to higher sales.
 
 ![](RackMultipart20220114-4-1ryo50e_html_e87f3a33a67fd79c.png)
 
-Traffic model process
+## Traffic model process
 
 **LightGBM** had better performance in predicting the **future** Traffic values and **Ridge** predicted better on **historical values** ,as such Traffic data was split into three:
 
@@ -181,7 +171,7 @@ Traffic and Sales data overlap and prediction indicator(green)
 
 Due to the mismatch in timeseries of Traffic and Sales data, historical and future predictions for Traffic values were predicted and added to the Sales data (for prediction of Sales).
 
-Sales modelling process
+## Sales modelling process
 
 Sales were predicted using the same features extracted for Traffic as well as comparing the two models.
 
@@ -191,7 +181,7 @@ Sales model process
 
 LightGBM performed better than Ridge, with the assumption that LightGBM performs better in short term predictions and future values whereas Ridge preforms better in longer prediction horizons and historical predictions.
 
-Ensembling
+## Ensembling
 
 Two ensembling techniques were used for predicting Sales data\*
 
@@ -210,9 +200,7 @@ Geometric mean is preferred when the values are exponential and have constant gr
 
 \*Only LightGBM was used to predict Sales data as Ridge did not perform well on future values
 
-1.
-# ![Shape6](RackMultipart20220114-4-1ryo50e_html_c186f39763cdc4c6.gif)
-Results andDiscussion
+# 6 Results andDiscussion
 
 The best performing experiments are below for each model and dataset.
 
@@ -225,7 +213,7 @@ Best Validation Testing Results
 | Sales | LightGBM | 275.92 | **0.97** |
 | Sales | Ridge | 608.20 | 0.84 |
 
-Traffic Predictions
+## Traffic Predictions
 
 Traffic predictions were split into two parts for the future (submission) predictions and the historical predictions.
 
@@ -245,7 +233,7 @@ For the 1-month validation test, Ridge performed worse than LightGBM on **future
 
 Therefore, Ridge was used to predict the historical values and LightGBM to predict the future (submission) values.
 
-Sales Predictions
+## Sales Predictions
 
 LightGBM bested Ridge with a higher R-Squared and lower RMSE. The main differing influences being LightGBM preferred temporal features (linear features removed), whereas Ridge preferred the Fourier features (temporal features removed).
 
@@ -257,7 +245,7 @@ LightGBM bested Ridge with a higher R-Squared and lower RMSE. The main differing
 
 **Ridge** predictions for Sales data
 
-Ensembling Results
+## Ensembling Results
 
 Sales final predictions were ensembled using the submissions of the Ridge model and LightGBM model.
 
@@ -271,9 +259,7 @@ Sales final predictions were ensembled using the submissions of the Ridge model 
 
 To improve on this technique, multiple submissions should be saved and used for **each model** and then ensembled.
 
-1.
-# ![Shape7](RackMultipart20220114-4-1ryo50e_html_c186f39763cdc4c6.gif)
-Reflection
+# 7 Reflection
 
 This was an interesting and challenging exercise which I enjoyed tremendously; the biggest hurdles were getting the Traffic data into a format for Sales to use as well as resampling the data into hour intervals.
 
@@ -283,11 +269,7 @@ If time allowed, I would have also attempted the below to improve performance:
 - 7-day value lags (shift Sales and Traffic values)
 - Further ensembling with additional models and submissions
 
-#
-
-1.
-# ![Shape8](RackMultipart20220114-4-1ryo50e_html_c186f39763cdc4c6.gif)
-Assumptions
+# 8 Assumptions
 
 There were some questions related to the exercise requirements. The below assumptions were requested for clarification however clarity wasn&#39;t provided as of writing this document.
 
@@ -295,9 +277,7 @@ There were some questions related to the exercise requirements. The below assump
 - 1 month prediction was required however the training data did not end at 1 month, therefore the prediction timeframe was created and projected 1-month from the last day of the training.
 - Missing values were said to be present in the datasets and were assumed to be all intervals not present in the 15-minute timeframe
 
-1.
-# ![Shape9](RackMultipart20220114-4-1ryo50e_html_c186f39763cdc4c6.gif)
-References
+# 9 References
 
 1. LightGBM in 2nd place in M5 competition [https://www.kaggle.com/c/m5-forecasting-accuracy/discussion/164599](https://www.kaggle.com/c/m5-forecasting-accuracy/discussion/164599)
 2. LightGBM parameter tuning [https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html](https://lightgbm.readthedocs.io/en/latest/Parameters-Tuning.html)
