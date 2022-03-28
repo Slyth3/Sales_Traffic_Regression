@@ -43,7 +43,7 @@ Yearly Gross Domestic Product ( **GDP** ) values were obtained as these values w
 
 US federal **holidays** were merged to training data as they should indicate days where customers would be more likely to make purchases.
 
-# 3 Features andProcessing
+# 3 Features and Processing
 
 Missing Values
 
